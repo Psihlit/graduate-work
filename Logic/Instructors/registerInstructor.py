@@ -1,30 +1,29 @@
-from datetime import datetime
-
-from pydantic import EmailStr, Field
-from typing import Optional
-from sqlalchemy import insert
+from sqlalchemy import insert, select
 
 from DB.databaseConnection import session
-from DB.models import instructors
+from DB.models import instructors, cosmonauts
+from Logic.Errors.Errors import UserIsExist
+
+from globals import current_user
 
 
 def register_instructor(
-        email: EmailStr,
-        password: Optional[str] = Field(default="12345", min_length=5, max_length=25),
-        surname: Optional[str] = Field(max_length=50),
-        name: Optional[str] = Field(max_length=50),
-        patronymic: Optional[str] = Field(max_length=50),
-        date_of_birth: Optional[datetime] = Field(default=datetime.utcnow),
-        passport_data: Optional[str] = Field(default="0000000000", max_length=10),
-        citizenship: Optional[str] = Field(default="Россия", max_length=30),
-        marital_status: Optional[str] = Field(max_length=50),
-        registration_address: Optional[str] = Field(max_length=50),
-        residence_address: Optional[str] = Field(max_length=50),
-        nationality: Optional[str] = Field(max_length=50),
-        phone_number: Optional[str] = Field(max_length=15),
-        education: Optional[str] = Field(max_length=50),
-        work_experience: Optional[int] = Field(lt=100)
-) -> None:
+        email: str,
+        password: str,
+        surname: str,
+        name: str,
+        patronymic: str,
+        date_of_birth: str,
+        passport_data: str,
+        citizenship: str,
+        marital_status: str,
+        registration_address: str,
+        residence_address: str,
+        nationality: str,
+        phone_number: str,
+        education: str,
+        work_experience: int
+):
     """
     Функция для добавления данных о космонавте в базу данных
     :param email: Почта
@@ -46,28 +45,51 @@ def register_instructor(
     """
 
     # Создание словаря и передача в него данных
-    new_instructor = {"Почта": email,
-                      "Пароль": password,
-                      "Фамилия": surname,
-                      "Имя": name,
-                      "Отчество": patronymic,
-                      "Дата рождения": date_of_birth,
-                      "Паспортные данные": passport_data,
-                      "Гражданство": citizenship,
-                      "Семейное положение": marital_status,
-                      "Место прописки": registration_address,
-                      "Место проживания": residence_address,
-                      "Национальность": nationality,
-                      "Номер телефона": phone_number,
-                      "Образование": education,
-                      "Стаж работы": work_experience
+    new_instructor = {"email": email,
+                      "password": password,
+                      "surname": surname,
+                      "name": name,
+                      "patronymic": patronymic,
+                      "date_of_birth": date_of_birth,
+                      "passport_data": passport_data,
+                      "citizenship": citizenship,
+                      "marital_status": marital_status,
+                      "registration_address": registration_address,
+                      "residence_address": residence_address,
+                      "nationality": nationality,
+                      "phone_number": phone_number,
+                      "education": education,
+                      "work_experience": work_experience
                       }
+
+    global current_user
 
     # запрос на добавление в базу данных, распаковка созданного словаря
     try:
+        # проверяем, что почта не используется среди инструкторов
+        query = select(instructors).where(instructors.c.email == email)
+        result = session.execute(query)
+        instructor = result.first()
+
+        if instructor:
+            raise UserIsExist("Пользователь с такой почтой уже существует!")
+
+        # проверяем, что почта не используется среди космонавтов
+        query = select(cosmonauts).where(cosmonauts.c.email == email)
+        result = session.execute(query)
+        cosmonaut = result.first()
+
+        if cosmonaut:
+            raise UserIsExist("Пользователь с такой почтой уже существует!")
+
         stmt = insert(instructors).values(**new_instructor)
         session.execute(stmt)
         session.commit()
         session.close()
+
+        current_user = new_instructor
+
+        return current_user
+
     except Exception as e:
-        print(e)
+        raise e

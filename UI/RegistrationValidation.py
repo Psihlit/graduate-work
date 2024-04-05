@@ -1,8 +1,6 @@
-from typing import Optional
 import re
 
-from pydantic import BaseModel, EmailStr, constr, validator, Field
-from PyQt6.QtWidgets import QMessageBox
+from pydantic import BaseModel
 
 
 # Определение модели данных для валидации
@@ -20,8 +18,6 @@ class RegistrationData(BaseModel):
     residence_address: str
     nationality: str
     phone_number: str
-    # phone_number: Optional[str] = Field(pattern=r'\+7\(\d{3}\)\d{3}-\d{2}-\d{2}',
-    #                                     default="+7(918)000-00-00")
     education: str
     work_experience: int
 

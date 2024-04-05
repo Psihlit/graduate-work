@@ -1,13 +1,11 @@
-from datetime import datetime
-
-from pydantic import EmailStr, Field
-from typing import Optional
 from sqlalchemy import insert, select
 
 from DB.databaseConnection import session
-from DB.models import cosmonauts
+from DB.models import cosmonauts, instructors
 
 from Logic.Errors.Errors import UserIsExist
+
+from globals import current_user
 
 
 def register_cosmonaut(
@@ -25,7 +23,7 @@ def register_cosmonaut(
         nationality: str,
         phone_number: str,
         education: str
-) -> None:
+):
     """
     Функция для добавления данных о космонавте в базу данных
     :param email: Почта
@@ -62,8 +60,11 @@ def register_cosmonaut(
                      "education": education
                      }
 
+    global current_user
+
     # запрос на добавление в базу данных, распаковка созданного словаря
     try:
+        # проверяем, что почта не используется среди космонавтов
         query = select(cosmonauts).where(cosmonauts.c.email == email)
         result = session.execute(query)
         cosmonaut = result.first()
@@ -71,10 +72,22 @@ def register_cosmonaut(
         if cosmonaut:
             raise UserIsExist("Пользователь с такой почтой уже существует!")
 
+        # проверяем, что почта не используется среди инструкторов
+        query = select(instructors).where(instructors.c.email == email)
+        result = session.execute(query)
+        instructor = result.first()
+
+        if instructor:
+            raise UserIsExist("Пользователь с такой почтой уже существует!")
+
         stmt = insert(cosmonauts).values(**new_cosmonaut)
         session.execute(stmt)
         session.commit()
         session.close()
+
+        current_user = new_cosmonaut
+
+        return current_user
 
     except Exception as e:
         raise e

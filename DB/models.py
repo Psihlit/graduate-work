@@ -1,4 +1,4 @@
-from sqlalchemy import MetaData, Table, Column, Integer, String, Date, ForeignKey, TIMESTAMP
+from sqlalchemy import MetaData, Table, Column, Integer, String, ForeignKey, TIMESTAMP
 
 # Определяем метаданные
 metadata = MetaData()
