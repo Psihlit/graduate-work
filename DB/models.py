@@ -68,7 +68,6 @@ trainings = Table(
     Column('ID', Integer, primary_key=True, autoincrement=True),
     Column('train_name', String, nullable=False),
     Column('description', String, nullable=False),
-    Column('date_of_start', TIMESTAMP, nullable=False),
     Column('duration', Integer, nullable=False),
     Column('ID_input_data', ForeignKey(input_data.c.ID), nullable=False)
 )

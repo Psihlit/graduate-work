@@ -4,20 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="53c63268-0f78-4461-a242-7456f110580c" name="Changes" comment="Стартовый коммит. Создана вкладка регистрации космонавта с сохранением в БД">
-      <change afterPath="$PROJECT_DIR$/Logic/Instructors/loginInstructor.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/UI/AuthData.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/globals.py" afterDir="false" />
+    <list default="true" id="53c63268-0f78-4461-a242-7456f110580c" name="Changes" comment="Доработаны стартовые окна, сделан макет главного окна, настроены табы, сделана страница пользователя">
+      <change afterPath="$PROJECT_DIR$/Logic/Trainings/addInputData.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Logic/Trainings/add_training.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DB/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/DB/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Logic/Cosmonauts/loginCosmonaut.py" beforeDir="false" afterPath="$PROJECT_DIR$/Logic/Cosmonauts/loginCosmonaut.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Logic/Cosmonauts/registerCosmonaut.py" beforeDir="false" afterPath="$PROJECT_DIR$/Logic/Cosmonauts/registerCosmonaut.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Logic/Errors/Errors.py" beforeDir="false" afterPath="$PROJECT_DIR$/Logic/Errors/Errors.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Logic/Instructors/registerInstructor.py" beforeDir="false" afterPath="$PROJECT_DIR$/Logic/Instructors/registerInstructor.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/UI/RegistrationValidation.py" beforeDir="false" afterPath="$PROJECT_DIR$/UI/RegistrationValidation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/UI/Views.py" beforeDir="false" afterPath="$PROJECT_DIR$/UI/StartViews.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UI/StartViews.py" beforeDir="false" afterPath="$PROJECT_DIR$/UI/StartViews.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,7 +38,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Python.RegistrationValidation.executor": "Run",
-    "Python.main.executor": "Run",
+    "Python.main.executor": "Debug",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "last_opened_file_path": "D:/PycharmProjects/Diplom Project"
@@ -113,19 +105,29 @@
       <option name="project" value="LOCAL" />
       <updated>1712144170116</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Доработаны стартовые окна, сделан макет главного окна, настроены табы, сделана страница пользователя">
+      <option name="closed" value="true" />
+      <created>1712310462092</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1712310462092</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Стартовый коммит. Создана вкладка регистрации космонавта с сохранением в БД" />
-    <option name="LAST_COMMIT_MESSAGE" value="Стартовый коммит. Создана вкладка регистрации космонавта с сохранением в БД" />
+    <MESSAGE value="Доработаны стартовые окна, сделан макет главного окна, настроены табы, сделана страница пользователя" />
+    <option name="LAST_COMMIT_MESSAGE" value="Доработаны стартовые окна, сделан макет главного окна, настроены табы, сделана страница пользователя" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/DB/databaseConnection.py</url>
-          <option name="timeStamp" value="15" />
+          <url>file://$PROJECT_DIR$/UI/StartViews.py</url>
+          <line>571</line>
+          <option name="timeStamp" value="25" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

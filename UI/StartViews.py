@@ -1,12 +1,14 @@
 from PyQt6 import QtCore
 from PyQt6.QtWidgets import QMainWindow, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QCheckBox, QMessageBox, \
-    QTabWidget
+    QTabWidget, QComboBox
 
 from Logic.Cosmonauts.loginCosmonaut import login_cosmonaut
 from Logic.Cosmonauts.registerCosmonaut import register_cosmonaut
 from Logic.Errors.Errors import UserIsExist, MyValidationError
 from Logic.Instructors.loginInstructor import login_instructor
 from Logic.Instructors.registerInstructor import register_instructor
+from Logic.Trainings.addInputData import add_input_data, get_elements_by_ID_instructor
+from Logic.Trainings.add_training import get_last_input_data, add_training, get_input_data_by_ID
 from UI.AuthData import AuthData
 from UI.RegistrationValidation import RegistrationData, validate_data
 from style import BUTTON_STYLE
@@ -40,11 +42,13 @@ class LoginWindow(QMainWindow):
 
         self.email_input = QLineEdit()
         self.email_input.setPlaceholderText("Почта")
+        self.email_input.setText("user@mail.com")  # по умолчанию
         layout.addWidget(self.email_input)
 
         self.password_input = QLineEdit()
         self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
         self.password_input.setPlaceholderText("Пароль")
+        self.password_input.setText("qwerty123")  # по умолчанию
         layout.addWidget(self.password_input)
 
         self.role_checkbox = QCheckBox("Инструктор")
@@ -97,7 +101,7 @@ class LoginWindow(QMainWindow):
             try:
                 data = data.dict()  # Преобразование данных обратно в словарь для использования в регистрации
                 current_user = login_instructor(**data)
-                QMessageBox.information(self, "Успех", "Авторизация прошла успешно!")
+                # QMessageBox.information(self, "Успех", "Авторизация прошла успешно!")
                 self.open_main_window(current_user)
 
             except UserIsExist as e:
@@ -105,7 +109,7 @@ class LoginWindow(QMainWindow):
 
             except Exception as e:
                 QMessageBox.critical(self, "Critical Error", str(e))
-                print(str(e))
+                print(f"Ошибка при авторизации инструктора: {str(e)}")
         # endregion
 
         # region Космонавт
@@ -114,7 +118,7 @@ class LoginWindow(QMainWindow):
             try:
                 data = data.dict()  # Преобразование данных обратно в словарь для использования в регистрации
                 current_user = login_cosmonaut(**data)  # получение данных о текущем пользователе
-                QMessageBox.information(self, "Успех", "Авторизация прошла успешно!")
+                # QMessageBox.information(self, "Успех", "Авторизация прошла успешно!")
                 self.open_main_window(current_user)
 
             except UserIsExist as e:
@@ -122,7 +126,7 @@ class LoginWindow(QMainWindow):
 
             except Exception as e:
                 QMessageBox.critical(self, "Critical Error", str(e))
-                print(str(e))
+                print(f"Ошибка при авторизации космонавта: {str(e)}")
         # endregion
 
 
@@ -227,6 +231,7 @@ class RegistrationWindow(QMainWindow):
         self.back_to_login_button.clicked.connect(self.open_login_window)
 
         self.central_widget.setLayout(layout)
+
     # endregion
 
     def open_login_window(self, current_user):
@@ -310,7 +315,7 @@ class RegistrationWindow(QMainWindow):
 
             except Exception as e:
                 QMessageBox.critical(self, "Critical Error", str(e))
-                print(str(e))
+                print(f"Ошибка при добавлении регистрации инструктора: {str(e)}")
         # endregion
 
         # region Космонавт
@@ -329,7 +334,7 @@ class RegistrationWindow(QMainWindow):
 
             except Exception as e:
                 QMessageBox.critical(self, "Critical Error", str(e))
-                print(str(e))
+                print(f"Ошибка при регистрации космонавта: {str(e)}")
         # endregion
 
 
@@ -375,7 +380,6 @@ class MainWindow(QMainWindow):
                      "phone_number", "education"]
 
         i = 0
-        print(len(self.current_user))
         for field in fields:
             label = QLabel(field + ":")
             personal_layout.addWidget(label)
@@ -386,21 +390,95 @@ class MainWindow(QMainWindow):
                 i += 1
 
         # Добавление поля "Стаж работы", если длина списка current_user равна 16
-        if len(self.current_user) == 16:
+        if self.is_instructor():
             work_experience_label = QLabel("Стаж работы:")
             personal_layout.addWidget(work_experience_label)
             if self.current_user:
                 work_experience_value = QLabel(str(self.current_user.get("work_experience", "")))
                 personal_layout.addWidget(work_experience_value)
 
-        personal_layout.addWidget(QPushButton("Кнопка на вкладке 'Личная страница'"))
+        logout_button = QPushButton("Выйти из учетной записи")
+        personal_layout.addWidget(logout_button)
+        logout_button.clicked.connect(self.logout)
         # endregion
 
-        # Создаем кнопку "Выйти из учетной записи"
-        logout_button = QPushButton("Выйти из учетной записи")
-        logout_button.clicked.connect(self.logout)
-        self.tab_widget.addTab(logout_button, " ")
+        # region Добавление тренировки (только Инструктор)
+        if self.is_instructor():
+            self.create_training_tab = QWidget()
+            self.tab_widget.addTab(self.create_training_tab, "Добавление тренировки")
+
+            # Добавляем виджеты на вкладку "Создание тренировки"
+            self.create_training_layout = QVBoxLayout()
+            self.create_training_tab.setLayout(self.create_training_layout)
+
+            self.training_name_label = QLabel("Название тренировки:")
+            self.create_training_layout.addWidget(self.training_name_label)
+            self.training_name_input = QLineEdit()
+            self.create_training_layout.addWidget(self.training_name_input)
+
+            self.training_description_label = QLabel("Описание тренировки:")
+            self.create_training_layout.addWidget(self.training_description_label)
+            self.training_description_input = QLineEdit()
+            self.create_training_layout.addWidget(self.training_description_input)
+
+            self.training_duration_label = QLabel("Продолжительность:")
+            self.create_training_layout.addWidget(self.training_duration_label)
+            self.training_duration_input = QLineEdit()
+            self.create_training_layout.addWidget(self.training_duration_input)
+
+            # region Добавление входных данных
+
+            self.input_data_label = QLabel("Входные данные:")
+            self.create_training_layout.addWidget(self.input_data_label)
+
+            # Выпадающее окно с выбором данных из БД
+            self.input_data_combobox = QComboBox()
+            self.update_input_data_combobox()
+            # Добавьте элементы из базы данных сюда
+            self.create_training_layout.addWidget(self.input_data_combobox)
+
+            # Обработчик события изменения значения в выпадающем списке
+            self.input_data_combobox.currentIndexChanged.connect(self.update_fields)
+
+            self.parameter_a_label = QLabel("Параметр А:")
+            self.create_training_layout.addWidget(self.parameter_a_label)
+            self.parameter_a_input = QLineEdit()
+            self.create_training_layout.addWidget(self.parameter_a_input)
+
+            self.parameter_b_label = QLabel("Параметр Б:")
+            self.create_training_layout.addWidget(self.parameter_b_label)
+            self.parameter_b_input = QLineEdit()
+            self.create_training_layout.addWidget(self.parameter_b_input)
+
+            self.parameter_c_label = QLabel("Параметр В:")
+            self.create_training_layout.addWidget(self.parameter_c_label)
+            self.parameter_c_input = QLineEdit()
+            self.create_training_layout.addWidget(self.parameter_c_input)
+
+            # endregion
+
+            # Добавляем кнопку "Сохранить"
+            self.save_button = QPushButton("Сохранить")
+            self.save_button.clicked.connect(self.save_training)
+            self.create_training_layout.addWidget(self.save_button)
+
+        # endregion
+
     # endregion
+
+    def update_input_data_combobox(self):
+        self.input_data_combobox.clear()
+        self.input_data_combobox.addItem("Новые данные")
+        for element in self.get_input_data():
+            self.input_data_combobox.addItem(element)
+
+    def clear_all_widgets(self):
+        self.training_name_input.clear()
+        self.training_description_input.clear()
+        self.training_duration_input.clear()
+        self.parameter_a_input.clear()
+        self.parameter_b_input.clear()
+        self.parameter_c_input.clear()
 
     def logout(self):
         """Функция для деавторизации пользователя"""
@@ -409,3 +487,100 @@ class MainWindow(QMainWindow):
         self.login_window.show()
         self.close()
         print("Выход из учетной записи")
+
+    def is_instructor(self):
+        if len(self.current_user) == 16:
+            return True
+        return False
+
+    def get_input_data(self):
+        instructor_id = int(self.current_user.get("id", ""))
+        input_data = get_elements_by_ID_instructor(instructor_id)
+        # Создайте список элементов "Данные №N"
+        input_data_items = [f"Данные № {element[0]}" for element in input_data]
+        return input_data_items
+
+    def update_fields(self, index):
+        # Обработчик события изменения значения в выпадающем списке
+        if index == 0:  # Выбран пункт "Новые данные"
+            self.parameter_a_input.clear()
+            self.parameter_b_input.clear()
+            self.parameter_c_input.clear()
+            self.parameter_a_input.setEnabled(True)
+            self.parameter_b_input.setEnabled(True)
+            self.parameter_c_input.setEnabled(True)
+        else:
+            # Получение данных из БД по выбранному id и заполнение полей
+            text = self.input_data_combobox.currentText().split()
+            if not text:
+                return
+            selected_id = int(text[-1])
+
+            input_data = get_input_data_by_ID(selected_id)
+            # Получите данные из БД по selected_id и заполните соответствующие поля
+            # Здесь просто пример
+            self.parameter_a_input.setText(input_data[2])  # param_a
+            self.parameter_b_input.setText(input_data[3])  # param_b
+            self.parameter_c_input.setText(input_data[4])  # param_c
+            self.parameter_a_input.setEnabled(False)
+            self.parameter_b_input.setEnabled(False)
+            self.parameter_c_input.setEnabled(False)
+
+    def save_training(self):
+        # Обработчик нажатия на кнопку "Сохранить"
+        training_name = self.training_name_input.text()
+        training_description = self.training_description_input.text()
+        training_duration = self.training_duration_input.text()
+        parameter_a = self.parameter_a_input.text()
+        parameter_b = self.parameter_b_input.text()
+        parameter_c = self.parameter_c_input.text()
+
+        if self.input_data_combobox.currentText() == "Новые данные":
+            instructor_id = int(self.current_user.get("id", ""))
+
+            input_data = {
+                "ID_instructor": instructor_id,
+                "param_A": parameter_a,
+                "param_B": parameter_b,
+                "param_C": parameter_c,
+            }
+
+            try:
+                add_input_data(input_data)
+
+            except Exception as e:
+                QMessageBox.critical(self, "Critical Error", str(e))
+                print(f"Ошибка при добавлении входных данных: {str(e)}")
+
+        text = self.input_data_combobox.currentText().split()
+        if text[-1] == "данные":
+            input_data = get_last_input_data()
+            ID_input_data = input_data[0]
+        else:
+            ID_input_data = int(text[-1])
+
+        training_data = {
+            "train_name": training_name,
+            "description": training_description,
+            "duration": training_duration,
+            "ID_input_data": ID_input_data,
+        }
+        try:
+            add_training(training_data)
+            QMessageBox.information(self, "Успех", "Тренировка добавлена успешно!")
+            self.update_input_data_combobox()
+            self.clear_all_widgets()
+
+        except Exception as e:
+            QMessageBox.critical(self, "Critical Error", str(e))
+            print(f"Ошибка при добавлении тренировки: {str(e)}")
+
+        # Здесь можно добавить логику сохранения данных в базу данных или в файл
+        # Например:
+        print("Сохранение тренировки:")
+        print(f"Название: {training_name}")
+        print(f"Описание: {training_description}")
+        print(f"Продолжительность: {training_duration}")
+        print(f"Параметр А: {parameter_a}")
+        print(f"Параметр Б: {parameter_b}")
+        print(f"Параметр В: {parameter_c}")
