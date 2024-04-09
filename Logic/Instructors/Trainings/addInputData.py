@@ -9,10 +9,13 @@ def add_input_data(inputData):
         stmt = insert(input_data).values(**inputData)
         session.execute(stmt)
         session.commit()
-        session.close()
 
     except Exception as e:
+        # Обработка возможных ошибок
+        session.rollback()  # Откатываем транзакцию
         raise e
+    finally:
+        session.close()  # Закрываем сессию
 
 
 def get_elements_by_ID_instructor(ID_instructor):

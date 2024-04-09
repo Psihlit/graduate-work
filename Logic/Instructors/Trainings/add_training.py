@@ -33,7 +33,10 @@ def add_training(training_data):
         stmt = insert(trainings).values(**training_data)
         session.execute(stmt)
         session.commit()
-        session.close()
 
     except Exception as e:
+        # Обработка возможных ошибок
+        session.rollback()  # Откатываем транзакцию
         raise e
+    finally:
+        session.close()  # Закрываем сессию

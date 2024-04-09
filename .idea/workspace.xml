@@ -4,11 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="53c63268-0f78-4461-a242-7456f110580c" name="Changes" comment="Доработаны стартовые окна, сделан макет главного окна, настроены табы, сделана страница пользователя">
-      <change afterPath="$PROJECT_DIR$/Logic/Trainings/addInputData.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Logic/Trainings/add_training.py" afterDir="false" />
+    <list default="true" id="53c63268-0f78-4461-a242-7456f110580c" name="Changes" comment="Создана вкладка добавления тренировок, настроено обновление окна при добавлении тренировок">
+      <change afterPath="$PROJECT_DIR$/Logic/Cosmonauts/Supervisions/get_info.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Logic/Instructors/Supervisions/global_search.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Logic/Instructors/Supervisions/personal_search.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DB/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/DB/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Logic/Cosmonauts/loginCosmonaut.py" beforeDir="false" afterPath="$PROJECT_DIR$/Logic/Cosmonauts/Auth/loginCosmonaut.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Logic/Cosmonauts/registerCosmonaut.py" beforeDir="false" afterPath="$PROJECT_DIR$/Logic/Cosmonauts/Auth/registerCosmonaut.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Logic/Instructors/loginInstructor.py" beforeDir="false" afterPath="$PROJECT_DIR$/Logic/Instructors/Auth/loginInstructor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Logic/Instructors/registerInstructor.py" beforeDir="false" afterPath="$PROJECT_DIR$/Logic/Instructors/Auth/registerInstructor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Logic/Trainings/addInputData.py" beforeDir="false" afterPath="$PROJECT_DIR$/Logic/Instructors/Trainings/addInputData.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Logic/Trainings/add_training.py" beforeDir="false" afterPath="$PROJECT_DIR$/Logic/Instructors/Trainings/add_training.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UI/StartViews.py" beforeDir="false" afterPath="$PROJECT_DIR$/UI/StartViews.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -38,7 +44,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Python.RegistrationValidation.executor": "Run",
-    "Python.main.executor": "Debug",
+    "Python.main.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "last_opened_file_path": "D:/PycharmProjects/Diplom Project"
@@ -49,6 +55,10 @@
       <recent name="D:\PycharmProjects\Diplom Project\Logic\Instructors" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\PycharmProjects\Diplom Project\Logic\Cosmonauts\Auth" />
+      <recent name="D:\PycharmProjects\Diplom Project\Logic\Instructors\Trainings" />
+      <recent name="D:\PycharmProjects\Diplom Project\Logic\Instructors\Supervisions" />
+      <recent name="D:\PycharmProjects\Diplom Project\Logic\Instructors\Auth" />
       <recent name="D:\PycharmProjects\Diplom Project\Logic\Cosmonauts" />
     </key>
   </component>
@@ -113,21 +123,40 @@
       <option name="project" value="LOCAL" />
       <updated>1712310462092</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Создана вкладка добавления тренировок, настроено обновление окна при добавлении тренировок">
+      <option name="closed" value="true" />
+      <created>1712401825502</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1712401825502</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Стартовый коммит. Создана вкладка регистрации космонавта с сохранением в БД" />
     <MESSAGE value="Доработаны стартовые окна, сделан макет главного окна, настроены табы, сделана страница пользователя" />
-    <option name="LAST_COMMIT_MESSAGE" value="Доработаны стартовые окна, сделан макет главного окна, настроены табы, сделана страница пользователя" />
+    <MESSAGE value="Создана вкладка добавления тренировок, настроено обновление окна при добавлении тренировок" />
+    <option name="LAST_COMMIT_MESSAGE" value="Создана вкладка добавления тренировок, настроено обновление окна при добавлении тренировок" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/UI/StartViews.py</url>
-          <line>571</line>
-          <option name="timeStamp" value="25" />
+          <line>790</line>
+          <option name="timeStamp" value="38" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/UI/StartViews.py</url>
+          <line>851</line>
+          <option name="timeStamp" value="39" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/UI/StartViews.py</url>
+          <line>330</line>
+          <option name="timeStamp" value="42" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

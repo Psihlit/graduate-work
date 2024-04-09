@@ -1,21 +1,22 @@
 from PyQt6 import QtCore
 from PyQt6.QtWidgets import QMainWindow, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QCheckBox, QMessageBox, \
-    QTabWidget, QComboBox
+    QTabWidget, QComboBox, QHBoxLayout, QTableWidget, QTableWidgetItem
 
-from Logic.Cosmonauts.loginCosmonaut import login_cosmonaut
-from Logic.Cosmonauts.registerCosmonaut import register_cosmonaut
+from Logic.Cosmonauts.Auth.loginCosmonaut import login_cosmonaut
+from Logic.Cosmonauts.Auth.registerCosmonaut import register_cosmonaut
+from Logic.Cosmonauts.Supervisions.get_info import get_info_about_supervision
 from Logic.Errors.Errors import UserIsExist, MyValidationError
-from Logic.Instructors.loginInstructor import login_instructor
-from Logic.Instructors.registerInstructor import register_instructor
-from Logic.Trainings.addInputData import add_input_data, get_elements_by_ID_instructor
-from Logic.Trainings.add_training import get_last_input_data, add_training, get_input_data_by_ID
+from Logic.Instructors.Auth.loginInstructor import login_instructor
+from Logic.Instructors.Auth.registerInstructor import register_instructor
+from Logic.Instructors.Supervisions.global_search import global_search_users_by_lastname, add_supervision
+from Logic.Instructors.Supervisions.personal_search import delete_from_supervision, instructor_search_users_by_lastname
+from Logic.Instructors.Trainings.addInputData import add_input_data, get_elements_by_ID_instructor
+from Logic.Instructors.Trainings.add_training import get_last_input_data, add_training, get_input_data_by_ID
 from UI.AuthData import AuthData
 from UI.RegistrationValidation import RegistrationData, validate_data
 from style import BUTTON_STYLE
 
 from config import START_LOGIN_X, START_LOGIN_Y, LOGIN_X, LOGIN_Y, START_MAIN_X, START_MAIN_Y, MAIN_X, MAIN_Y
-
-from globals import current_user
 
 
 class LoginWindow(QMainWindow):
@@ -326,7 +327,7 @@ class RegistrationWindow(QMainWindow):
                 data = data.dict()  # Преобразование данных обратно в словарь для использования в регистрации
                 del data['work_experience']
                 current_user = register_cosmonaut(**data)
-                QMessageBox.information(self, "Успех", "Регистрация прошла успешно!")
+                # QMessageBox.information(self, "Успех", "Регистрация прошла успешно!")
                 self.open_main_window(current_user)
 
             except UserIsExist as e:
@@ -334,7 +335,7 @@ class RegistrationWindow(QMainWindow):
 
             except Exception as e:
                 QMessageBox.critical(self, "Critical Error", str(e))
-                print(f"Ошибка при регистрации космонавта: {str(e)}")
+                print(f"Ошибка при регистрации космонавта: {str(e)}, {e}")
         # endregion
 
 
@@ -353,15 +354,16 @@ class MainWindow(QMainWindow):
         # Создаем вкладки и добавляем их в виджет вкладок
         self.training_tab = QWidget()
         self.personal_page_tab = QWidget()
+        self.supervision_tab = QTabWidget()
 
         self.tab_widget.addTab(self.training_tab, "Выбор тренировки")
         self.tab_widget.addTab(self.personal_page_tab, "Личная страница")
+        self.tab_widget.addTab(self.supervision_tab, "Кураторство")
 
         # region Выбор тренировки
         # Вкладка "Выбор тренировки"
         training_layout = QVBoxLayout()
         self.training_tab.setLayout(training_layout)
-        training_layout.addWidget(QPushButton("Кнопка на вкладке 'Выбор тренировки'"))
         # endregion
 
         # region Личная страница
@@ -400,6 +402,121 @@ class MainWindow(QMainWindow):
         logout_button = QPushButton("Выйти из учетной записи")
         personal_layout.addWidget(logout_button)
         logout_button.clicked.connect(self.logout)
+        # endregion
+
+        # region Кураторство
+
+        # для инструктора
+        if self.is_instructor():
+            # region Поиск
+            # Вкладка "Поиск"
+            self.global_search_tab = QWidget()
+            self.global_search_layout = QVBoxLayout()
+            self.global_search_tab.setLayout(self.global_search_layout)
+
+            self.global_horizontal_layout = QHBoxLayout()
+
+            # Добавляем виджеты в горизонтальный контейнер
+            self.global_horizontal_layout.addWidget(QLabel("Поле поиска:"))
+            self.global_search_edit = QLineEdit()
+            self.global_horizontal_layout.addWidget(self.global_search_edit)
+
+            self.global_search_button = QPushButton("Поиск")
+            self.global_horizontal_layout.addWidget(self.global_search_button)
+            self.global_search_button.clicked.connect(self.global_search_button_clicked)
+
+            # Добавляем кнопку "Очистить"
+            self.global_clear_button = QPushButton("Очистить")
+            self.global_horizontal_layout.addWidget(self.global_clear_button)
+            self.global_clear_button.clicked.connect(self.global_clear_search_field)
+
+            # Устанавливаем созданный горизонтальный контейнер в качестве макета для виджета self.search_tab
+            self.global_search_layout.addLayout(self.global_horizontal_layout)
+
+            self.global_search_results_table = QTableWidget()
+            self.global_search_results_table.setColumnCount(5)
+            self.global_search_results_table.setHorizontalHeaderLabels(["Фамилия", "Имя", "Отчество", "Почта", ""])
+            self.global_search_layout.addWidget(self.global_search_results_table)
+            self.global_fill_possible_supervision_table()
+
+            self.supervision_tab.addTab(self.global_search_tab, "Поиск")
+            self.supervision_tab.currentChanged.connect(self.global_update_search_tab)
+
+            # endregion
+
+            # region Мое кураторство
+
+            # Вкладка "Мое кураторство"
+            self.instructor_supervision_tab = QWidget()
+            self.instructor_supervision_layout = QVBoxLayout()
+            self.instructor_supervision_tab.setLayout(self.instructor_supervision_layout)
+
+            # Создаем горизонтальный контейнер для строки с полем ввода и кнопками
+            self.instructor_horizontal_layout = QHBoxLayout()
+
+            # Добавляем виджеты в горизонтальный контейнер
+            self.instructor_horizontal_layout.addWidget(QLabel("Поле поиска:"))
+            self.instructor_search_edit = QLineEdit()
+            self.instructor_horizontal_layout.addWidget(self.instructor_search_edit)
+
+            self.instructor_search_button = QPushButton("Поиск")
+            self.instructor_horizontal_layout.addWidget(self.instructor_search_button)
+            self.instructor_search_button.clicked.connect(self.instructor_search_button_clicked)
+
+            # Добавляем кнопку "Очистить"
+            self.instructor_clear_button = QPushButton("Очистить")
+            self.instructor_horizontal_layout.addWidget(self.instructor_clear_button)
+            self.instructor_clear_button.clicked.connect(self.instructor_clear_search_field)
+
+            # Устанавливаем созданный горизонтальный контейнер в качестве макета для виджета self.search_tab
+            self.instructor_supervision_layout.addLayout(self.instructor_horizontal_layout)
+
+            # Добавление таблицы с данными кураторства
+            self.instructor_search_results_table = QTableWidget()
+            self.instructor_search_results_table.setColumnCount(5)  # Установите количество столбцов
+            self.instructor_search_results_table.setHorizontalHeaderLabels(["Фамилия", "Имя", "Отчество", "Почта", ""])
+            self.instructor_supervision_layout.addWidget(self.instructor_search_results_table)
+            self.instructor_fill_possible_supervision_table()
+
+            # Добавление кнопки "Удалить" к таблице
+            self.instructor_delete_button = QPushButton("Удалить")
+            self.instructor_supervision_layout.addWidget(self.instructor_delete_button)
+            self.instructor_delete_button.clicked.connect(
+                self.delete_from_supervision)  # Подключение обработчика нажатия кнопки "Удалить"
+
+            # Добавляем вкладку "Мое кураторство" в виджет вкладок
+            self.supervision_tab.addTab(self.instructor_supervision_tab, "Мое кураторство")
+            self.supervision_tab.currentChanged.connect(self.update_instructor_supervision_tab)
+
+            # endregion
+
+        # для космонавта
+        else:
+            # region Кураторство есть
+            try:
+                self.cosmonaut_supervision_layout = QVBoxLayout()
+                self.supervision_tab.setLayout(self.cosmonaut_supervision_layout)
+
+                cosmonaut_supervision_fields = ["Почта", "Фамилия", "Имя", "Отчество"]
+
+                instructor_info = get_info_about_supervision(self.current_user.get("email", ""))
+
+                if len(instructor_info) > 0:
+                    i = 0
+                    for field in cosmonaut_supervision_fields:
+                        label = QLabel(field + ":")
+                        self.cosmonaut_supervision_layout.addWidget(label)
+                        label_value = QLabel(str(instructor_info[i]))
+                        self.cosmonaut_supervision_layout.addWidget(label_value)
+                        i += 1
+            # endregion
+
+            # region Кураторства нет
+            except TypeError as e:
+                label = QLabel("У вас отсутствует куратор")
+                self.cosmonaut_supervision_layout.addWidget(label)
+            # endregion
+
         # endregion
 
         # region Добавление тренировки (только Инструктор)
@@ -466,20 +583,183 @@ class MainWindow(QMainWindow):
 
     # endregion
 
-    def update_input_data_combobox(self):
-        self.input_data_combobox.clear()
-        self.input_data_combobox.addItem("Новые данные")
-        for element in self.get_input_data():
-            self.input_data_combobox.addItem(element)
+    def is_instructor(self):
+        if len(self.current_user) == 16:
+            return True
+        return False
 
-    def clear_all_widgets(self):
-        self.training_name_input.clear()
-        self.training_description_input.clear()
-        self.training_duration_input.clear()
-        self.parameter_a_input.clear()
-        self.parameter_b_input.clear()
-        self.parameter_c_input.clear()
+    # region Функции для "Кураторство" -> "Поиск"
+    def global_clear_search_field(self):
+        """
+        Очищает поле поиска, формирует таблицу заново
+        :return:
+        """
+        try:
+            self.global_search_edit.clear()
+            self.global_fill_possible_supervision_table()
+        except Exception as e:
+            QMessageBox.critical(self, "Critical Error", str(e))
+            print(f"Ошибка при очистке поиска: {str(e)}")
 
+    def global_fill_possible_supervision_table(self):
+        """
+        Заполнение таблицы ВСЕМИ возможными вариантами
+        :return:
+        """
+        try:
+            self.global_search_results_table.clearContents()  # Очищаем таблицу перед заполнением
+            search_results = global_search_users_by_lastname("")  # Получаем всех пользователей
+            self.global_filling_table(search_results)
+        except Exception as e:
+            QMessageBox.critical(self, "Critical Error", str(e))
+            print(f"Ошибка при заполнении таблицы возможного кураторства: {str(e)}")
+
+    def global_filling_table(self, search_results):
+        """
+        Функция заполнения таблицы всех возможных отношений кураторов
+        :param search_results:
+        :return:
+        """
+        try:
+            # Очистка содержимого таблицы
+            self.global_search_results_table.clearContents()
+            self.global_search_results_table.setRowCount(0)
+
+            # Заполнение таблицы данными
+            for row_index, row_data in enumerate(search_results):
+                self.global_search_results_table.insertRow(row_index)
+                for col_index, col_data in enumerate(row_data[1:]):  # Пропускаем первый элемент (ID)
+                    item = QTableWidgetItem(col_data)
+                    self.global_search_results_table.setItem(row_index, col_index, item)
+
+                # Создаем кнопку "Добавить" и добавляем ее в последний столбец каждой строки
+                add_button = QPushButton("Добавить")
+                add_button.clicked.connect(lambda checked, row=row_data: self.add_to_supervision(row))
+                self.global_search_results_table.setCellWidget(row_index, 4, add_button)
+
+        except Exception as e:
+            QMessageBox.critical(self, "Critical Error", str(e))
+            print(f"Ошибка при заполнении таблицы возможного кураторства: {str(e)}")
+
+    def global_search_button_clicked(self):
+        """
+        Обработчик кнопки поиска
+        :return:
+        """
+        try:
+            self.global_search_results_table.clearContents()  # Очищаем таблицу при каждом новом поиске
+            self.global_filling_table(global_search_users_by_lastname(self.global_search_edit.text()))
+        except Exception as e:
+            QMessageBox.critical(self, "Critical Error", str(e))
+            print(f"Ошибка при поиске кураторства: {str(e)}")
+
+    def add_to_supervision(self, user_data):
+        """
+        Обработчик кнопки добавления кураторства
+        :param user_data:
+        :return:
+        """
+        try:
+            # Добавление пользователя в таблицу Кураторства
+            cosmonaut_id = user_data[0]  # Получаем ID пользователя
+            instructor_id = int(self.current_user.get("id", ""))  # Получаем ID инструктора
+            add_supervision(cosmonaut_id, instructor_id)
+            # После успешного добавления обновляем таблицу возможного кураторства
+            self.global_fill_possible_supervision_table()
+        except Exception as e:
+            print(str(e))
+
+    def global_update_search_tab(self, index):
+        if index == self.supervision_tab.indexOf(self.global_search_tab):
+            # Это обновление для вкладки "Поиск"
+            self.global_fill_possible_supervision_table()
+
+    # endregion
+
+    # region Функции для "Кураторство" -> "Мое кураторство"
+
+    def instructor_fill_possible_supervision_table(self):
+        try:
+            instructor_id = int(self.current_user.get("id", ""))
+            self.instructor_search_results_table.clearContents()  # Очищаем таблицу перед заполнением
+            search_results = instructor_search_users_by_lastname(instructor_id, "")  # Получаем всех пользователей
+            self.instructor_filling_table(search_results)
+        except Exception as e:
+            QMessageBox.critical(self, "Critical Error", str(e))
+            print(f"Ошибка при заполнении таблицы возможного кураторства: {str(e)}")
+
+    def instructor_filling_table(self, search_results):
+        try:
+            # Очистка содержимого таблицы
+            self.instructor_search_results_table.clearContents()
+            self.instructor_search_results_table.setRowCount(0)
+
+            # Заполнение таблицы данными
+            for row_index, row_data in enumerate(search_results):
+                self.instructor_search_results_table.insertRow(row_index)
+                for col_index, col_data in enumerate(row_data[1:]):  # Пропускаем первый элемент (ID)
+                    item = QTableWidgetItem(col_data)
+                    self.instructor_search_results_table.setItem(row_index, col_index, item)
+
+                # Создаем кнопку "Добавить" и добавляем ее в последний столбец каждой строки
+                add_button = QPushButton("Удалить")
+                add_button.clicked.connect(lambda checked, row=row_data: self.delete_from_supervision(row))
+                self.instructor_search_results_table.setCellWidget(row_index, 4, add_button)
+
+        except Exception as e:
+            QMessageBox.critical(self, "Critical Error", str(e))
+            print(f"Ошибка при заполнении таблицы возможного кураторства: {str(e)}")
+
+    def delete_from_supervision(self, user_data):
+        """
+        Обработчик кнопки добавления кураторства
+        :param user_data:
+        :return:
+        """
+        try:
+            # Добавление пользователя в таблицу Кураторства
+            cosmonaut_id = user_data[0]  # Получаем ID пользователя
+            instructor_id = int(self.current_user.get("id", ""))  # Получаем ID инструктора
+            delete_from_supervision(cosmonaut_id, instructor_id)
+            # После успешного добавления обновляем таблицу возможного кураторства
+            self.instructor_fill_possible_supervision_table()
+        except Exception as e:
+            print(str(e))
+
+    def instructor_search_button_clicked(self):
+        """
+        Обработчик кнопки поиска
+        :return:
+        """
+        try:
+            instructor_id = int(self.current_user.get("id", ""))
+            self.instructor_search_results_table.clearContents()  # Очищаем таблицу при каждом новом поиске
+            self.instructor_filling_table(
+                instructor_search_users_by_lastname(instructor_id, self.instructor_search_edit.text()))
+        except Exception as e:
+            QMessageBox.critical(self, "Critical Error", str(e))
+            print(f"Ошибка при поиске кураторства: {str(e)}")
+
+    def instructor_clear_search_field(self):
+        """
+        Очищает поле поиска, формирует таблицу заново
+        :return:
+        """
+        try:
+            self.instructor_search_edit.clear()
+            self.instructor_fill_possible_supervision_table()
+        except Exception as e:
+            QMessageBox.critical(self, "Critical Error", str(e))
+            print(f"Ошибка при очистке поиска: {str(e)}")
+
+    def update_instructor_supervision_tab(self, index):
+        if index == self.supervision_tab.indexOf(self.instructor_supervision_tab):
+            # Это обновление для вкладки "Мое кураторство"
+            self.instructor_fill_possible_supervision_table()
+
+    # endregion
+
+    # region Функции для "Личная страница"
     def logout(self):
         """Функция для деавторизации пользователя"""
         current_user = None
@@ -488,10 +768,9 @@ class MainWindow(QMainWindow):
         self.close()
         print("Выход из учетной записи")
 
-    def is_instructor(self):
-        if len(self.current_user) == 16:
-            return True
-        return False
+    # endregion
+
+    # region Функции для "Добавление тренировки"
 
     def get_input_data(self):
         instructor_id = int(self.current_user.get("id", ""))
@@ -525,6 +804,20 @@ class MainWindow(QMainWindow):
             self.parameter_a_input.setEnabled(False)
             self.parameter_b_input.setEnabled(False)
             self.parameter_c_input.setEnabled(False)
+
+    def update_input_data_combobox(self):
+        self.input_data_combobox.clear()
+        self.input_data_combobox.addItem("Новые данные")
+        for element in self.get_input_data():
+            self.input_data_combobox.addItem(element)
+
+    def clear_all_widgets(self):
+        self.training_name_input.clear()
+        self.training_description_input.clear()
+        self.training_duration_input.clear()
+        self.parameter_a_input.clear()
+        self.parameter_b_input.clear()
+        self.parameter_c_input.clear()
 
     def save_training(self):
         # Обработчик нажатия на кнопку "Сохранить"
@@ -575,12 +868,4 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Critical Error", str(e))
             print(f"Ошибка при добавлении тренировки: {str(e)}")
 
-        # Здесь можно добавить логику сохранения данных в базу данных или в файл
-        # Например:
-        print("Сохранение тренировки:")
-        print(f"Название: {training_name}")
-        print(f"Описание: {training_description}")
-        print(f"Продолжительность: {training_duration}")
-        print(f"Параметр А: {parameter_a}")
-        print(f"Параметр Б: {parameter_b}")
-        print(f"Параметр В: {parameter_c}")
+    # endregion
