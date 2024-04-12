@@ -1,7 +1,7 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow
-from UI.StartViews import LoginWindow
 
+from PyQt6.QtWidgets import QApplication
+from UI.StartViews import LoginWindow
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

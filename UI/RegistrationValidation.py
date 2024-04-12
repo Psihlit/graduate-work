@@ -78,7 +78,7 @@ def check_password(password):
         return False
 
     # Проверка наличия букв и цифр
-    contains_letters = bool(re.search(r'[a-zA-Z]', password))
+    contains_letters = bool(re.search(r'[a-zA-Zа-яА-Я]', password))
     contains_digits = bool(re.search(r'\d', password))
 
     # Пароль должен содержать и буквы, и цифры
@@ -92,7 +92,7 @@ def check_email(email):
 
 
 def check_phone(phone_number):
-    PHONE_REGEX = r'\+7\(\d{3}\)\d{3}-\d{2}-\d{2}'
+    PHONE_REGEX = r'(?:\+?7)?(?:\(\d{3}\)|\d{3})\d{3}-\d{2}-\d{2}'
     if re.match(PHONE_REGEX, phone_number):
         return True
 

@@ -4,18 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="53c63268-0f78-4461-a242-7456f110580c" name="Changes" comment="Создана вкладка добавления тренировок, настроено обновление окна при добавлении тренировок">
-      <change afterPath="$PROJECT_DIR$/Logic/Cosmonauts/Supervisions/get_info.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Logic/Instructors/Supervisions/global_search.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Logic/Instructors/Supervisions/personal_search.py" afterDir="false" />
+    <list default="true" id="53c63268-0f78-4461-a242-7456f110580c" name="Changes" comment="Создана вкладка кураторства для обоих пользователй, настроена логика для этой вкладки">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Logic/Cosmonauts/loginCosmonaut.py" beforeDir="false" afterPath="$PROJECT_DIR$/Logic/Cosmonauts/Auth/loginCosmonaut.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Logic/Cosmonauts/registerCosmonaut.py" beforeDir="false" afterPath="$PROJECT_DIR$/Logic/Cosmonauts/Auth/registerCosmonaut.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Logic/Instructors/loginInstructor.py" beforeDir="false" afterPath="$PROJECT_DIR$/Logic/Instructors/Auth/loginInstructor.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Logic/Instructors/registerInstructor.py" beforeDir="false" afterPath="$PROJECT_DIR$/Logic/Instructors/Auth/registerInstructor.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Logic/Trainings/addInputData.py" beforeDir="false" afterPath="$PROJECT_DIR$/Logic/Instructors/Trainings/addInputData.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Logic/Trainings/add_training.py" beforeDir="false" afterPath="$PROJECT_DIR$/Logic/Instructors/Trainings/add_training.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UI/AuthData.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/UI/RegistrationValidation.py" beforeDir="false" afterPath="$PROJECT_DIR$/UI/RegistrationValidation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UI/StartViews.py" beforeDir="false" afterPath="$PROJECT_DIR$/UI/StartViews.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/style.py" beforeDir="false" afterPath="$PROJECT_DIR$/style.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,6 +26,20 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Psihlit&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="f5892208-75ee-4d0f-9c10-38fd830dcdeb" />
+        <option name="url" value="https://github.com/Psihlit/graduate-work.git" />
+      </UrlAndAccount>
+    </option>
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 7
@@ -131,31 +140,40 @@
       <option name="project" value="LOCAL" />
       <updated>1712401825502</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Создана вкладка кураторства для обоих пользователй, настроена логика для этой вкладки">
+      <option name="closed" value="true" />
+      <created>1712669024905</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1712669024905</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Стартовый коммит. Создана вкладка регистрации космонавта с сохранением в БД" />
     <MESSAGE value="Доработаны стартовые окна, сделан макет главного окна, настроены табы, сделана страница пользователя" />
     <MESSAGE value="Создана вкладка добавления тренировок, настроено обновление окна при добавлении тренировок" />
-    <option name="LAST_COMMIT_MESSAGE" value="Создана вкладка добавления тренировок, настроено обновление окна при добавлении тренировок" />
+    <MESSAGE value="Создана вкладка кураторства для обоих пользователй, настроена логика для этой вкладки" />
+    <option name="LAST_COMMIT_MESSAGE" value="Создана вкладка кураторства для обоих пользователй, настроена логика для этой вкладки" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/UI/StartViews.py</url>
-          <line>790</line>
+          <line>1101</line>
           <option name="timeStamp" value="38" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/UI/StartViews.py</url>
-          <line>851</line>
+          <line>1162</line>
           <option name="timeStamp" value="39" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/UI/StartViews.py</url>
-          <line>330</line>
+          <line>561</line>
           <option name="timeStamp" value="42" />
         </line-breakpoint>
       </breakpoints>
