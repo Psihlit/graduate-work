@@ -4,12 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="53c63268-0f78-4461-a242-7456f110580c" name="Changes" comment="Создана вкладка кураторства для обоих пользователй, настроена логика для этой вкладки">
+    <list default="true" id="53c63268-0f78-4461-a242-7456f110580c" name="Changes" comment="Прописаны стили виджетов, применены в коде, расставлены регионы в инициализации интерфейса">
+      <change afterPath="$PROJECT_DIR$/Logic/Cosmonauts/Trainings/get_trainings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/UI/AuthData.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/UI/RegistrationValidation.py" beforeDir="false" afterPath="$PROJECT_DIR$/UI/RegistrationValidation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UI/StartViews.py" beforeDir="false" afterPath="$PROJECT_DIR$/UI/StartViews.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/style.py" beforeDir="false" afterPath="$PROJECT_DIR$/style.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -53,10 +51,13 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Python.RegistrationValidation.executor": "Run",
+    "Python.StartViews.executor": "Run",
     "Python.main.executor": "Run",
+    "Python.vent_training.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "D:/PycharmProjects/Diplom Project"
+    "last_opened_file_path": "D:/PycharmProjects/Diplom Project",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -148,7 +149,15 @@
       <option name="project" value="LOCAL" />
       <updated>1712669024905</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Прописаны стили виджетов, применены в коде, расставлены регионы в инициализации интерфейса">
+      <option name="closed" value="true" />
+      <created>1712927217259</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1712927217259</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -156,25 +165,21 @@
     <MESSAGE value="Доработаны стартовые окна, сделан макет главного окна, настроены табы, сделана страница пользователя" />
     <MESSAGE value="Создана вкладка добавления тренировок, настроено обновление окна при добавлении тренировок" />
     <MESSAGE value="Создана вкладка кураторства для обоих пользователй, настроена логика для этой вкладки" />
-    <option name="LAST_COMMIT_MESSAGE" value="Создана вкладка кураторства для обоих пользователй, настроена логика для этой вкладки" />
+    <MESSAGE value="Прописаны стили виджетов, применены в коде, расставлены регионы в инициализации интерфейса" />
+    <option name="LAST_COMMIT_MESSAGE" value="Прописаны стили виджетов, применены в коде, расставлены регионы в инициализации интерфейса" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/UI/StartViews.py</url>
-          <line>1101</line>
-          <option name="timeStamp" value="38" />
+          <line>1802</line>
+          <option name="timeStamp" value="55" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/UI/StartViews.py</url>
-          <line>1162</line>
-          <option name="timeStamp" value="39" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/UI/StartViews.py</url>
-          <line>561</line>
-          <option name="timeStamp" value="42" />
+          <line>1503</line>
+          <option name="timeStamp" value="70" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

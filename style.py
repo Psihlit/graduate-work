@@ -10,6 +10,7 @@ LIGHT_TEXT_COLOR = "#ffffff"  # Цвет текста (белый)
 DARK_TEXT_COLOR = "#000000"  # Цвет текста (черный)
 BACKGROUND_COLOR = "#ecf0f1"  # Цвет фона (светло-серый)
 BACKGROUND_COLOR_LIGHT = "#ffffff"  # Цвет фона (белый)
+TRANSPARENT_BG = "rgba(0, 0, 0, 0)"
 
 STANDARD_SIZE = 12
 FONT_NAME = "Arial"
@@ -145,3 +146,21 @@ QCalendarWidget QToolButton{
 }
 
 """ % (BACKGROUND_COLOR_LIGHT, LIGHT_TEXT_COLOR, DARK_TEXT_COLOR, DARK_TEXT_COLOR, DARK_TEXT_COLOR)
+
+INFO_LABEL = """
+QLabel {
+    color: %s;
+    font-family: %s;
+    font-size: %s;
+    background-color: %s
+}
+""" % (DARK_TEXT_COLOR, FONT_NAME, MIDDLE_FONT_SIZE, BACKGROUND_COLOR_LIGHT)
+
+TRANSPARENT_LABEL = """
+QLabel {
+    color: %s;
+    font-family: %s;
+    font-size: %s;
+    background-color: %s
+}
+""" % (DARK_TEXT_COLOR, FONT_NAME, BIG_FONT_SIZE, TRANSPARENT_BG)
