@@ -108,7 +108,7 @@ def check_string_for_numbers(input_string, max_chars):
 
 def check_passport_data(passport_data, max_chars):
     # Проверка длины строки
-    if len(passport_data) > max_chars:
+    if len(passport_data) != max_chars:
         return False
     # Проверка наличия букв в строке
     if any(char.isalpha() for char in passport_data):

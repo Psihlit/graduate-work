@@ -12,7 +12,9 @@ from PyQt6.QtWidgets import QMainWindow, QLabel, QLineEdit, QPushButton, QVBoxLa
 from Logic.Cosmonauts.Auth.loginCosmonaut import login_cosmonaut
 from Logic.Cosmonauts.Auth.registerCosmonaut import register_cosmonaut
 from Logic.Cosmonauts.Supervisions.get_info import get_info_about_supervision
+from Logic.Cosmonauts.Trainings.get_training_data import get_training_data
 from Logic.Cosmonauts.Trainings.get_trainings import get_trainings
+from Logic.Cosmonauts.Trainings.save_training_result import save_training_result
 from Logic.Errors.Errors import UserIsExist, MyValidationError
 from Logic.Instructors.Auth.loginInstructor import login_instructor
 from Logic.Instructors.Auth.registerInstructor import register_instructor
@@ -384,8 +386,8 @@ class RegistrationWindow(QMainWindow):
         self.nationality_input.setStyleSheet(LINEEDIT_STYLE)
         self.nationality_input.setPlaceholderText("Введите вашу национальность")
 
-        registration_address_layout.addWidget(self.registration_address_label)
-        registration_address_layout.addWidget(self.registration_address_input)
+        nationality_layout.addWidget(self.nationality_label)
+        nationality_layout.addWidget(self.nationality_input)
 
         layout.addLayout(nationality_layout)
         # endregion
@@ -943,7 +945,7 @@ class MainWindow(QMainWindow):
             for row_index, row_data in enumerate(trainings):
                 self.training_table.insertRow(row_index)
                 for col_index, col_data in enumerate(row_data[1:]):  # Пропускаем первый элемент (ID)
-                    item = QTableWidgetItem(col_data)
+                    item = QTableWidgetItem(str(col_data))
                     self.training_table.setItem(row_index, col_index, item)
 
                 # Создаем кнопку "Добавить" и добавляем ее в последний столбец каждой строки
@@ -1260,6 +1262,12 @@ class TrainingWindow(QMainWindow):
         self.setWindowTitle("Training Window")
         self.setFixedSize(width, height)
         self.current_user = current_user
+        self.data = data
+
+        self.train_data = get_training_data(self.data[0])
+        start_fan_speed = int(self.train_data[2])
+        start_temp = int(self.train_data[3])
+        end_temp = int(self.train_data[4])
 
         global fans
         fans = [1, 2, 3]
@@ -1267,6 +1275,11 @@ class TrainingWindow(QMainWindow):
         random.shuffle(fans)
         self.first_flag = True
         self.end_flag = False
+        self.end_flag_is_changed = False
+
+        self.test_time1 = 1
+        self.test_time1 = 2
+        self.test_repair = 1.0
 
         # region флаги для работы алгоритма
         self.cv1_down_flag = False
@@ -1373,13 +1386,13 @@ class TrainingWindow(QMainWindow):
         # endregion
 
         # region Служебная температура
-        self.ser_temp_inp = QLabel("25 °C")
+        self.ser_temp_inp = QLabel(f"{start_temp} °C")
         self.ser_temp_inp.setStyleSheet(INFO_LABEL)
 
         self.ser_temp_inp_item = self.scene.addWidget(self.ser_temp_inp)
         self.ser_temp_inp_item.setPos(42, 178)
 
-        self.ser_temp_out = QLabel("35 °C")
+        self.ser_temp_out = QLabel(f"{end_temp} °C")
         self.ser_temp_out.setStyleSheet(INFO_LABEL)
 
         self.ser_temp_out_item = self.scene.addWidget(self.ser_temp_out)
@@ -1387,13 +1400,13 @@ class TrainingWindow(QMainWindow):
         # endregion
 
         # region АГЖ температура
-        self.ag_temp_inp = QLabel("25 °C")
+        self.ag_temp_inp = QLabel(f"{start_temp} °C")
         self.ag_temp_inp.setStyleSheet(INFO_LABEL)
 
         self.ag_temp_inp_item = self.scene.addWidget(self.ag_temp_inp)
         self.ag_temp_inp_item.setPos(364, 186)
 
-        self.ag_temp_out = QLabel("34 °C")
+        self.ag_temp_out = QLabel(f"{end_temp} °C")
         self.ag_temp_out.setStyleSheet(INFO_LABEL)
 
         self.ag_temp_out_item = self.scene.addWidget(self.ag_temp_out)
@@ -1401,19 +1414,19 @@ class TrainingWindow(QMainWindow):
         # endregion
 
         # region Значения центральных вентиляторов
-        self.cv1_data = QLabel("1500")
+        self.cv1_data = QLabel(f"{start_fan_speed}")
         self.cv1_data.setStyleSheet(INFO_LABEL)
 
         self.cv1_data_item = self.scene.addWidget(self.cv1_data)
         self.cv1_data_item.setPos(186, 214)
 
-        self.cv2_data = QLabel("500")
+        self.cv2_data = QLabel(f"{start_fan_speed}")
         self.cv2_data.setStyleSheet(INFO_LABEL)
 
         self.cv2_data_item = self.scene.addWidget(self.cv2_data)
         self.cv2_data_item.setPos(499, 513)
 
-        self.cv3_data = QLabel("1800")
+        self.cv3_data = QLabel(f"{start_fan_speed}")
         self.cv3_data.setStyleSheet(INFO_LABEL)
 
         self.cv3_data_item = self.scene.addWidget(self.cv3_data)
@@ -1427,7 +1440,7 @@ class TrainingWindow(QMainWindow):
         self.v1_data_item = self.scene.addWidget(self.v1_data)
         self.v1_data_item.setPos(502, 143)
 
-        self.v2_data = QLabel("700")
+        self.v2_data = QLabel("1200")
         self.v2_data.setStyleSheet(INFO_LABEL)
 
         self.v2_data_item = self.scene.addWidget(self.v2_data)
@@ -1471,6 +1484,7 @@ class TrainingWindow(QMainWindow):
         self.cv3_data.adjustSize()
         self.v1_data.adjustSize()
         self.v2_data.adjustSize()
+
     def start_simulation(self):
         self.timer.start(1000)  # Запускаем таймер, чтобы обновлять значения каждую секунду
 
@@ -1478,6 +1492,14 @@ class TrainingWindow(QMainWindow):
 
         # Конец тренировки
         if self.end_flag == True:
+            if self.end_flag_is_changed:
+                return
+            self.end_flag_is_changed = True
+            QMessageBox.information(self, "Конец", "Тренировка завершена!")
+            current_time = self.time_label.text()
+            maximum_time = self.data[3]
+            save_training_result(self.result, current_time, maximum_time, self.current_user, self.data)
+            self.back_to_menu()
             return
 
         # Увеличиваем время в секундах
@@ -1490,12 +1512,15 @@ class TrainingWindow(QMainWindow):
 
         # Выводим текущее время в секундах в консоль
         # print("Время в секундах:", self.elapsed_seconds)
+        first_time = 5
+        second_time = 20
 
         if self.first_flag and self.fan1_working and self.fan2_working and self.fan3_working:
             fans = [1, 2, 3]
             random.shuffle(fans)
             self.number_of_broken_fan = fans.pop()
-            self.break_time = random.randint(self.elapsed_seconds + 5, self.elapsed_seconds + 20)
+            self.break_time = random.randint(self.elapsed_seconds + self.test_time1,
+                                             self.elapsed_seconds + self.test_time1)
             self.first_flag = False
 
         self.simulations()
@@ -1504,6 +1529,8 @@ class TrainingWindow(QMainWindow):
     def simulations(self):
 
         if len(self.result) > 0 and self.result.count("Продолжать эксплуатацию модуля") == 3:
+            if self.end_flag_is_changed:
+                return
             self.end_flag = True
 
         if self.elapsed_seconds == self.break_time:
@@ -1684,37 +1711,38 @@ class TrainingWindow(QMainWindow):
             self.current_time = time.time()
             elapsed_time = self.current_time - self.start_time
             setattr(self, f"cv{fan_id}_down_flag", False)
+            minimum_elapsed_time = 30
 
-            if elapsed_time >= 15:
-                self.result.append(f"Перед повторным запуском ЦВ{fan_id} прошло 30 секунд")
+            if elapsed_time >= minimum_elapsed_time:
+                self.result.append(f"ЦВ{fan_id}: Перед повторным запуском прошло 30 секунд")
 
                 if random.random() <= 0.4:
                     fan_working = self.change_view(getattr(self, f"fan{fan_id}_working"),
                                                    f"Images/Общий вид/Стартовая страница.png")
                     setattr(self, f"fan{fan_id}_working", fan_working)
-                    self.result.append(f"ЦВ {fan_id} включился")
+                    self.result.append(f"ЦВ{fan_id}: Включился")
                     self.result.append("Продолжать эксплуатацию модуля")
 
                 else:
-                    self.result.append(f"ЦВ {fan_id} не включился")
+                    self.result.append(f"ЦВ{fan_id}: Не включился")
 
             else:
-                self.result.append(f"Перед повторным запуском ЦВ{fan_id} НЕ прошло 30 секунд")
+                self.result.append(f"ЦВ{fan_id}: Перед повторным запуском НЕ прошло 30 секунд")
                 setattr(self, f"cv{fan_id}_down_flag", False)
 
         elif action.text() == "Прокрутить крыльчатку со стороны электродвигателя":
-            self.result.append(f"Прокрутка ЦВ {fan_id} выполнена безопасно")
+            self.result.append(f"ЦВ{fan_id}: Прокрутка выполнена безопасно")
             setattr(self, f"cv{fan_id}_rounded_flag", True)
             setattr(self, f"cv{fan_id}_down_flag", False)
 
         elif action.text() == "Заменить вентилятор":
-            self.result.append(f"Замена ЦВ {fan_id} выполнена безопасно")
+            self.result.append(f"ЦВ{fan_id}: Замена выполнена безопасно")
             setattr(self, f"cv{fan_id}_changed_flag", True)
             setattr(self, f"cv{fan_id}_down_flag", False)
 
         elif action.text() == "Отключить вентилятор" and getattr(self, f"cv{fan_id}_broken"):
             setattr(self, f"cv{fan_id}_broken", False)
-            self.result.append(f"ЦВ {fan_id} отключен до по указанию Земли")
+            self.result.append(f"ЦВ{fan_id}: Отключен до по указанию Земли")
 
     def handle_rounded_state(self, fan_id, action):
         if action.text() == "Включить вентилятор":
@@ -1724,11 +1752,11 @@ class TrainingWindow(QMainWindow):
                 fan_working = self.change_view(getattr(self, f"fan{fan_id}_working"),
                                                f"Images/Общий вид/Стартовая страница.png")
                 setattr(self, f"fan{fan_id}_working", fan_working)
-                self.result.append(f"ЦВ {fan_id} включился после прокрутки крыльчатки")
+                self.result.append(f"ЦВ{fan_id}: Включился после прокрутки крыльчатки")
                 self.result.append("Продолжать эксплуатацию модуля")
 
             else:
-                self.result.append(f"ЦВ {fan_id} НЕ включился после прокрутки крыльчатки")
+                self.result.append(f"ЦВ{fan_id}: НЕ включился после прокрутки крыльчатки")
 
     def handle_changed_state(self, fan_id, action):
         if action.text() == "Включить вентилятор":
@@ -1738,158 +1766,40 @@ class TrainingWindow(QMainWindow):
                 fan_working = self.change_view(getattr(self, f"fan{fan_id}_working"),
                                                f"Images/Общий вид/Стартовая страница.png")
                 setattr(self, f"fan{fan_id}_working", fan_working)
-                self.result.append(f"ЦВ {fan_id} включился после замены вентилятора")
+                self.result.append(f"ЦВ{fan_id}: Включился после замены вентилятора")
                 self.result.append("Продолжать эксплуатацию модуля")
 
             else:
-                self.result.append(f"ЦВ {fan_id} НЕ включился после замены вентилятора")
-                self.result.append(f"Отказ ЦВ {fan_id}")
+                self.result.append(f"ЦВ{fan_id}: НЕ включился после замены вентилятора")
+                self.result.append(f"ЦВ{fan_id}: Отказ")
                 self.result.append("Продолжать эксплуатацию модуля")
                 setattr(self, f"cv{fan_id}_broken", True)
 
     def handle_default_state(self, fan_id, action):
         if action.text() == "Включить вентилятор":
-
-            if random.random() <= 0.2:
+            repair_chance = 0.2
+            if random.random() <= repair_chance:
                 fan_working = self.change_view(getattr(self, f"fan{fan_id}_working"),
                                                f"Images/Общий вид/Стартовая страница.png")
                 setattr(self, f"fan{fan_id}_working", fan_working)
-                self.result.append(f"ЦВ {fan_id} включился")
+                self.result.append(f"ЦВ{fan_id}: Включился")
                 self.result.append("Продолжать эксплуатацию модуля")
 
             else:
-                self.result.append(f"ЦВ {fan_id} не включился")
+                self.result.append(f"ЦВ{fan_id}: Не включился")
 
         elif action.text() == "Отключить вентилятор":
             setattr(self, f"cv{fan_id}_down_flag", True)
             self.start_time = time.time()
-            self.result.append(f"ЦВ {fan_id} отключен")
+            self.result.append(f"ЦВ{fan_id}: Отключен")
 
         elif action.text() == "Прокрутить крыльчатку со стороны электродвигателя":
-            self.result.append(f"Прокрутка ЦВ {fan_id} выполнена НЕ безопасно")
+            self.result.append(f"ЦВ{fan_id}: Прокрутка выполнена НЕ безопасно")
             setattr(self, f"cv{fan_id}_rounded_flag", True)
 
         elif action.text() == "Заменить вентилятор":
-            self.result.append(f"Замена ЦВ {fan_id} выполнена НЕ безопасно")
+            self.result.append(f"ЦВ{fan_id}: Замена выполнена НЕ безопасно")
             setattr(self, f"cv{fan_id}_changed_flag", True)
-
-    # def contextMenuEvent(self, event):
-    #     # Определяем точки и действия
-    #     points = [
-    #         (QPointF(128, 192), QPointF(184, 244)),
-    #         (QPointF(442, 486), QPointF(498, 547)),
-    #         (QPointF(103, 545), QPointF(157, 598))
-    #     ]
-    #     actions = [
-    #         "Отключить вентилятор",
-    #         "Включить вентилятор",
-    #         "Прокрутить крыльчатку со стороны электродвигателя",
-    #         "Заменить вентилятор"
-    #     ]
-    #
-    #     # Проверяем, содержится ли позиция курсора в одном из прямоугольников
-    #     for (point_A, point_B) in points:
-    #         if point_A.x() <= event.pos().x() <= point_B.x() and point_A.y() <= event.pos().y() <= point_B.y():
-    #             menu = QMenu(self)
-    #
-    #             # Добавляем действия в меню
-    #             for action_text in actions:
-    #                 menu.addAction(action_text)
-    #
-    #             # Выполняем выбранное действие из контекстного меню
-    #             action = menu.exec(event.globalPos())
-    #
-    #             # Обработка выбранного действия
-    #             if action:
-    #                 print(f"Выбрано действие: {action.text()}")
-    #
-    #                 if self.cv1_down_flag:
-    #                     self.cv1_down_flag = not self.cv1_down_flag
-    #
-    #                     if action.text() == "Включить вентилятор" and (point_A, point_B) == points[0]:
-    #                         self.current_time = time.time()
-    #                         elapsed_time = self.current_time - self.start_time
-    #
-    #                         # Проверяем, прошло ли уже 30 секунд
-    #                         if elapsed_time >= 2:
-    #                             self.result.append("Перед повторным запуском ЦВ1 прошло 30 секунд")
-    #
-    #                             if random.random() <= 0.4:
-    #                                 self.fan1_working = self.change_view(self.fan1_working,
-    #                                                                      "Images/Общий вид/Стартовая страница.png")
-    #                                 self.result.append("ЦВ 1 включился")
-    #
-    #                             else:
-    #                                 self.result.append("ЦВ 1 не включился")
-    #
-    #                         else:
-    #                             self.result.append("Перед повторным запуском ЦВ1 НЕ прошло 30 секунд")
-    #                             self.result.append("ЦВ 1 не включился")
-    #
-    #                     if action.text() == "Прокрутить крыльчатку со стороны электродвигателя" and (
-    #                             point_A, point_B) == points[0]:
-    #                         self.result.append("Прокрутка ЦВ 1 выполнена безопасно")
-    #                         self.cv1_rounded_flag = not self.cv1_rounded_flag
-    #
-    #                     if action.text() == "Заменить вентилятор" and (
-    #                             point_A, point_B) == points[0]:
-    #                         self.result.append("Замена ЦВ 1 выполнена безопасно")
-    #                         self.cv1_changed_flag = not self.cv1_changed_flag
-    #
-    #                 elif self.cv1_rounded_flag:
-    #                     if action.text() == "Включить вентилятор" and (point_A, point_B) == points[0]:
-    #                         self.cv1_rounded_flag = not self.cv1_rounded_flag
-    #                         if random.random() <= 0.2:
-    #                             self.fan1_working = self.change_view(self.fan1_working,
-    #                                                                  "Images/Общий вид/Стартовая страница.png")
-    #                             self.result.append("ЦВ 1 включился после прокрутки крыльчатки")
-    #                             print("Значение fan1_working изменено")
-    #                         else:
-    #                             self.result.append("ЦВ 1 НЕ включился после прокрутки крыльчатки")
-    #
-    #                 elif self.cv1_changed_flag:
-    #                     if action.text() == "Включить вентилятор" and (point_A, point_B) == points[0]:
-    #                         self.cv1_changed_flag = not self.cv1_changed_flag
-    #                         if random.random() <= 0.5:
-    #                             self.fan1_working = self.change_view(self.fan1_working,
-    #                                                                  "Images/Общий вид/Стартовая страница.png")
-    #                             self.result.append("ЦВ 1 включился после замены вентилятора")
-    #                             self.result.append("Продолжать эксплуатацию модуля")
-    #                             print("Значение fan1_working изменено")
-    #                         else:
-    #                             self.result.append("ЦВ 1 НЕ включился после замены вентилятора")
-    #                             self.cv1_broken = not self.cv1_broken
-    #
-    #                 elif self.cv1_broken:
-    #                     self.cv1_broken = not self.cv1_broken
-    #                     if action.text() == "Отключить вентилятор" and (point_A, point_B) == points[0]:
-    #                         self.result.append("ЦВ 1 отключен до по указанию Земли")
-    #
-    #                 else:
-    #                     # Если выбрано "Включить вентилятор" в первой области, меняем значение fan1_working с вероятностью 20%
-    #                     if action.text() == "Включить вентилятор" and (point_A, point_B) == points[0]:
-    #                         if random.random() <= 0.2:
-    #                             self.fan1_working = self.change_view(self.fan1_working,
-    #                                                                  "Images/Общий вид/Стартовая страница.png")
-    #                             self.result.append("ЦВ 1 включился")
-    #                             print("Значение fan1_working изменено")
-    #                         else:
-    #                             self.result.append("ЦВ 1 не включился")
-    #
-    #                     if action.text() == "Отключить вентилятор" and (point_A, point_B) == points[0]:
-    #                         self.start_time = time.time()
-    #                         self.cv1_down_flag = True
-    #                         self.result.append("ЦВ 1 отключен")
-    #
-    #                     if action.text() == "Прокрутить крыльчатку со стороны электродвигателя" and (
-    #                             point_A, point_B) == points[0]:
-    #                         self.result.append("Прокрутка ЦВ 1 выполнена НЕ безопасно")
-    #
-    #             event.accept()
-    #             print(self.result)
-    #             return
-    #
-    #     event.ignore()  # Пропустить обработку события, если курсор не находится в заданной области
 
     def back_to_menu(self):
         self.main_window = MainWindow(self.current_user)

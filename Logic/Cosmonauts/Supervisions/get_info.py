@@ -15,11 +15,6 @@ def get_info_about_supervision(email):
         # Выполняем запрос и получаем результат
         search_results = session.execute(query).fetchone()
 
-        email = search_results[1]
-        surname = search_results[3]
-        name = search_results[4]
-        patronymic = search_results[5]
-
         result_list = [search_results[1], search_results[3], search_results[4], search_results[5]]
 
         return result_list

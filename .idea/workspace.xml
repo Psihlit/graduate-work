@@ -4,11 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="53c63268-0f78-4461-a242-7456f110580c" name="Changes" comment="Прописаны стили виджетов, применены в коде, расставлены регионы в инициализации интерфейса">
-      <change afterPath="$PROJECT_DIR$/Logic/Cosmonauts/Trainings/get_trainings.py" afterDir="false" />
+    <list default="true" id="53c63268-0f78-4461-a242-7456f110580c" name="Changes" comment="Реализована тренировка по починке вентиляторов">
+      <change afterPath="$PROJECT_DIR$/Logic/Cosmonauts/Trainings/get_training_data.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Logic/Cosmonauts/Trainings/save_training_result.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Logic/Cosmonauts/Supervisions/get_info.py" beforeDir="false" afterPath="$PROJECT_DIR$/Logic/Cosmonauts/Supervisions/get_info.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Logic/Cosmonauts/Trainings/get_trainings.py" beforeDir="false" afterPath="$PROJECT_DIR$/Logic/Cosmonauts/Trainings/get_trainings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UI/RegistrationValidation.py" beforeDir="false" afterPath="$PROJECT_DIR$/UI/RegistrationValidation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UI/StartViews.py" beforeDir="false" afterPath="$PROJECT_DIR$/UI/StartViews.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/style.py" beforeDir="false" afterPath="$PROJECT_DIR$/style.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,18 +51,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.RegistrationValidation.executor": "Run",
-    "Python.StartViews.executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.vent_training.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "D:/PycharmProjects/Diplom Project",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.RegistrationValidation.executor&quot;: &quot;Run&quot;,
+    &quot;Python.StartViews.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.vent_training.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/PycharmProjects/pythonProject&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\PycharmProjects\Diplom Project\Logic\Instructors" />
@@ -157,7 +160,15 @@
       <option name="project" value="LOCAL" />
       <updated>1712927217259</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Реализована тренировка по починке вентиляторов">
+      <option name="closed" value="true" />
+      <created>1713955857525</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1713955857525</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -166,20 +177,16 @@
     <MESSAGE value="Создана вкладка добавления тренировок, настроено обновление окна при добавлении тренировок" />
     <MESSAGE value="Создана вкладка кураторства для обоих пользователй, настроена логика для этой вкладки" />
     <MESSAGE value="Прописаны стили виджетов, применены в коде, расставлены регионы в инициализации интерфейса" />
-    <option name="LAST_COMMIT_MESSAGE" value="Прописаны стили виджетов, применены в коде, расставлены регионы в инициализации интерфейса" />
+    <MESSAGE value="Реализована тренировка по починке вентиляторов" />
+    <option name="LAST_COMMIT_MESSAGE" value="Реализована тренировка по починке вентиляторов" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/UI/StartViews.py</url>
-          <line>1802</line>
-          <option name="timeStamp" value="55" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/UI/StartViews.py</url>
-          <line>1503</line>
-          <option name="timeStamp" value="70" />
+          <url>file://$PROJECT_DIR$/Logic/Cosmonauts/Trainings/save_training_result.py</url>
+          <line>8</line>
+          <option name="timeStamp" value="80" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
